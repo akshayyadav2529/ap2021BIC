@@ -1,1 +1,12 @@
-Hi, I am Akshay Kumar
+Ready—please paste the files you currently have, and I’ll proceed based on those exact files.
+
+Send full contents of:
+- assignment4.pde
+- GameWorld.pde
+- Runner.pde
+- SolidBlock.pde
+- Collider.pde
+- Entity.pde
+- any extra files in use (e.g., Coin.pde, MovingHazard.pde)
+
+Once shared, I’ll generate updated code changes accordingly.
