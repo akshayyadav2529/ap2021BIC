@@ -1,4 +1,10 @@
 class Runner extends Collider {
+  final float MOVE_ACCEL = 0.7;
+  final float FRICTION = 0.9;
+  final float JUMP_SPEED = -14.5;
+  final float GRAVITY = 0.7;
+  final float MAX_FALL = 16;
+
   boolean grounded;
   boolean dead;
   boolean won;
@@ -17,20 +23,20 @@ class Runner extends Collider {
 
     for (int i = 0; i < updatePhysics; i++) {
       float move = 0;
-      if (leftHold) move -= 0.7;
-      if (rightHold) move += 0.7;
+      if (leftHold) move -= MOVE_ACCEL;
+      if (rightHold) move += MOVE_ACCEL;
 
       // Yesterday tuning: keep movement responsive but stable.
       vel.x += move;
-      vel.x *= 0.9;
+      vel.x *= FRICTION;
 
       if (grounded && upHold) {
-        vel.y = -14.5;
+        vel.y = JUMP_SPEED;
         grounded = false;
       }
 
-      vel.y += 0.7;
-      if (vel.y > 16) vel.y = 16;
+      vel.y += GRAVITY;
+      if (vel.y > MAX_FALL) vel.y = MAX_FALL;
 
       loc.x += vel.x;
       resolve(blocks, true);

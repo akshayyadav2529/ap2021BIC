@@ -11,7 +11,7 @@ void setup() {
   pixelDensity(1);
   rectMode(CENTER);
   noStroke();
-  frameRate(1000);
+  frameRate(60);
 
   world = new GameWorld();
   nextPhysicsAt = millis() + physicsStepMs;
@@ -23,8 +23,8 @@ void draw() {
 }
 
 void computePhysicsUpdates() {
-  if (nextPhysicsAt < millis()) {
-    updatePhysics = (millis() - nextPhysicsAt) / physicsStepMs;
+  if (nextPhysicsAt <= millis()) {
+    updatePhysics = ((millis() - nextPhysicsAt) / physicsStepMs) + 1;
     nextPhysicsAt += updatePhysics * physicsStepMs;
   } else {
     updatePhysics = 0;

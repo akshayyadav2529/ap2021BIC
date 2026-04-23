@@ -1,4 +1,8 @@
 class GameWorld {
+  final float CHECKPOINT_PULSE_BASE = 46;
+  final float CHECKPOINT_PULSE_AMPLITUDE = 6;
+  final float CHECKPOINT_PULSE_FREQUENCY = TWO_PI / 18.0;
+
   Runner hero;
   ArrayList<SolidBlock> blocks = new ArrayList<SolidBlock>();
   ArrayList<Coin> coins = new ArrayList<Coin>();
@@ -10,7 +14,9 @@ class GameWorld {
   int totalCoins;
   PVector checkpointPos;
   SolidBlock checkpointBlock;
+  boolean checkpointActive;
   int checkpointPulseFrames;
+  int checkpointPulseTick;
   int goalHintFrames;
 
   GameWorld() {
@@ -21,7 +27,9 @@ class GameWorld {
   void resetLevelFresh() {
     score = 0;
     checkpointPos = new PVector(120, 200);
+    checkpointActive = false;
     checkpointPulseFrames = 0;
+    checkpointPulseTick = 0;
     goalHintFrames = 0;
     buildLevel();
     hero = new Runner(checkpointPos.x, checkpointPos.y);
@@ -77,7 +85,10 @@ class GameWorld {
       respawnAtCheckpoint();
     }
 
-    if (checkpointPulseFrames > 0) checkpointPulseFrames--;
+    if (checkpointPulseFrames > 0) {
+      checkpointPulseFrames--;
+      checkpointPulseTick++;
+    }
     if (goalHintFrames > 0) goalHintFrames--;
 
     updateCamera();
@@ -102,9 +113,11 @@ class GameWorld {
   }
 
   void updateCheckpointTrigger() {
-    if (hero.overlaps(checkpointBlock) && checkpointPos.x < checkpointBlock.loc.x) {
+    if (!checkpointActive && hero.overlaps(checkpointBlock)) {
+      checkpointActive = true;
       checkpointPos.set(checkpointBlock.loc.x, checkpointBlock.loc.y - 50);
       checkpointPulseFrames = 60;
+      checkpointPulseTick = 0;
     }
   }
 
@@ -125,7 +138,7 @@ class GameWorld {
       if (b == checkpointBlock && checkpointPulseFrames > 0) {
         noFill();
         stroke(80, 220, 230, 210);
-        float pulse = 46 + 6 * sin(frameCount * 0.35);
+        float pulse = CHECKPOINT_PULSE_BASE + CHECKPOINT_PULSE_AMPLITUDE * sin(checkpointPulseTick * CHECKPOINT_PULSE_FREQUENCY);
         rect(b.loc.x, b.loc.y, pulse, pulse);
         noStroke();
       }
@@ -161,11 +174,11 @@ class GameWorld {
   void drawHud() {
     fill(180, 210, 235);
     textSize(16);
-    text("Arrows move, Up jump, P pause, R reset", 20, 28);
+    text("Arrow keys move, UP jumps, P pauses, R resets", 20, 28);
     text("Coins: " + score + " / " + totalCoins, 20, 52);
 
     String cpText = "Checkpoint: ";
-    if (checkpointPos.x > 130) cpText += "Active";
+    if (checkpointActive) cpText += "Active";
     else cpText += "Start";
     text(cpText, 20, 76);
 
